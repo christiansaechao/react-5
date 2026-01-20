@@ -1,57 +1,37 @@
-import "./App.css";
-import { Header } from "./components/header";
-import { Card } from "./components/card";
-import { Footer } from "./components/footer";
-import { Navigation } from "lucide-react";
+import { useState } from "react";
+import { Card } from "./components/pokemon/card";
+import { useDebounce, useGetData } from "./hooks/useGetData";
 
-/**
- * 1. Create 2 separate component files
- * 2. Move html over into the components
- * 3. Import them into App.tsx to render
- */
+import "./App.css";
+
+// https://pokeapi.co/api/v2/pokemon?results=9
+
+// fetching data
+// subscriptions
+// websockets => chat rooms => connection line
+// 1. empty array []
+// 2. [with values]
+// 3. you don't have a dependency array;
 
 function App() {
-  const cards = [
-    {
-      title: "Become a Dasher",
-      description:
-        "As a delivery driver, make money and work on your schedule. Sign up in minutes.",
-      Icon: Navigation,
-      button: "Start earning",
-    },
-    {
-      title: "Become a Merchant",
-      description:
-        "Attract new customers and grow sales, starting with 0% commissions for up to 30 days.",
-      Icon: Navigation,
-      button: "Sign up for DoorDash",
-    },
-    {
-      title: "Get the best DoorDash experience",
-      description:
-        "Experience the best your neighborhood has to offer, all in one app.",
-      Icon: Navigation,
-      button: "Get the app",
-    },
-  ];
+  const [favorites, setFavorites] = useState();
+  const [value, setValue] = useState("Charmander");
+  const [pokemons, loading] = useGetData(
+    `https://pokeapi.co/api/v2/pokemon?${value}`,
+  );
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
-      {/* Header */}
-      <Header />
-      <div className="flex flex-col justify-center items-center gap-8">
-        {cards.map((card) => (
-          <Card
-            title={card.title}
-            description={card.description}
-            Icon={card.Icon}
-            button={card.button}
-          />
-        ))}
-      </div>
+      <input value={value} onChange={(e) => useDebounce(e.target.value)} />
+      {pokemons.map((pokemon) => (
+        <Card name={pokemon} />
+      ))}
 
-      {/* Footer */}
-      <Footer />
+      {/* Favorites */}
     </>
   );
 }
